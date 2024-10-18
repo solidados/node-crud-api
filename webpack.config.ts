@@ -1,5 +1,4 @@
 import { resolve } from 'node:path';
-import ESLintPlugin from 'eslint-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -12,12 +11,7 @@ const config = {
     filename: 'index.js',
     path: resolve(__dirname, 'dist'),
   },
-  plugins: [
-    new ESLintPlugin({
-      extensions: ['ts'],
-      fix: !isProduction,
-    }),
-  ],
+  plugins: [],
   module: {
     rules: [
       {
