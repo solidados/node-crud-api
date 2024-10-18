@@ -12,7 +12,10 @@ import { config } from 'dotenv';
 config();
 const PORT: string | 3001 = process.env.PORT || 3001;
 
-const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
+const requestHandler = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> => {
   try {
     const { method, url } = req;
     if (url === `/api/users` && method === 'GET') {
@@ -23,7 +26,7 @@ const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
     }
     const userIdMatch = url?.match(/^\/api\/users\/([a-f0-9-]+)$/);
     if (userIdMatch) {
-      const userId = userIdMatch[1];
+      const userId: string = userIdMatch[1];
       if (method === 'GET') {
         return await getUserById(req, res, userId);
       }
