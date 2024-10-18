@@ -21,7 +21,7 @@ export const updateUser = (
   const userIndex: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
-  if (userIndex === -1) return null;
+  if (userIndex === -1) { return null; }
 
   users[userIndex] = { ...users[userIndex], ...data };
 
@@ -32,7 +32,7 @@ export const deleteUser = (id: string): boolean => {
   const index: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
-  if (index === -1) return false;
+  if (index === -1) { return false; }
 
   users.splice(index, 1);
 
