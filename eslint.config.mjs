@@ -8,4 +8,11 @@ export default [
   {languageOptions: { globals: globals.node }},
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    ignores: ["dist", "webpack.*.*"],
+    rules: {
+      "no-unused-vars": "error",
+      "no-undef": "error"
+    }
+  }
 ];
