@@ -4,7 +4,7 @@ import { createErrorResponse } from '../utils/errorHandler';
 export const notFoundHandler = (res: ServerResponse): void => {
   const errorResponse = createErrorResponse(
     404,
-    'Endpoint not found. URL does not exist',
+    'Resource not found. URL does not exist',
   );
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(errorResponse));
