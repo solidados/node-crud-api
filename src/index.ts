@@ -22,7 +22,8 @@ const requestHandler = async (
 ): Promise<void> => {
   try {
     const { method } = req;
-    const url = new URL(req.url || '', `http://${req.headers.host}`);
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const url = new URL(req.url || '', `${protocol}://${req.headers.host}`);
     const pathname = url.pathname.replace(/\/$/, '');
 
     if (pathname === `/api/users` && method === 'GET') {
