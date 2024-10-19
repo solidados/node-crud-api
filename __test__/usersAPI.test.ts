@@ -88,4 +88,22 @@ describe('User API', (): void => {
       expect(response.status).toBe(204);
     });
   });
+
+  describe('GET /api/users/:id (non-existent user)', (): void => {
+    it('should return 404 "User not found"', async (): Promise<void> => {
+      const response = await request.get(`/api/users/${createdUserId}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty('message', 'User not found');
+    });
+  });
+
+  describe('GET /api/users/error (non-existent route)', (): void => {
+    it('should return 500 "Internal Server Error"', async (): Promise<void> => {
+      const response = await request.get('/api/users/error');
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('message', 'Internal Server Error');
+    });
+  });
 });
