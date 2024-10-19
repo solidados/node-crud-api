@@ -17,31 +17,29 @@ Otherwise, please install [Node.js](https://nodejs.org) for required version.
 $ npm install
 ```
 
-#### 🚀 Build an application
 
 > **Note (before any further action):**
-> - File `.env.sample` – contain application's environmental variables.
-> - To proceed with the application, please rename it to `.env`.
+> - Rename `.env.sample` to `.env` – it contains application environmental variables.
 > - By default, the PORT is set to **4000**
 ---
 
+### 🚀 Scripts to run
+#### 🚀 Build an application
 ```bash
 # Build mode
 $ npm run build
 ```
-
-#### 🚀 Scripts to run
-
+#### Run in `Development` mode
 ```bash
 # Development mode
 $ npm run start
 ```
-
+#### Run in `Production` mode
 ```bash
 # Production mode
 $ npm run start:prod
 ```
-
+#### Run tests
 ```bash
 # Test mode
 $npm run test
@@ -108,7 +106,13 @@ $npm run test
    **404** and corresponding human-friendly message)
 4. Errors on the server side that occur during the processing of a request should be handled and processed correctly (server should answer with `status code`
    **500** and corresponding human-friendly message)
-5. Value of port on which application is running should be stored in .env file
+
+> Please follow the url: `/api/users/error` to test this Term.
+
+5. Value of port on which application is running should be stored in `.env` file
+
+> Please do not forget to rename `.env.sample` to `.env`
+
 6. There should be 2 modes of running application (development and production):
 - The application is run in development mode using `nodemon` or ts-node-dev (there is a npm script start:dev)
 - The application is run in production mode (there is a npm script start:prod that starts the build process and then runs the bundled file)
