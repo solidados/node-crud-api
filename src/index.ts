@@ -40,6 +40,6 @@ const requestHandler = async (
   }
 };
 
-const server = createServer(requestHandler);
+export const server = createServer(requestHandler);
 
 server.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
