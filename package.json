@@ -10,7 +10,8 @@
     "start:prod": "webpack && node dist",
     "lint": "eslint src",
     "format": "prettier --write src",
-    "test": "jest"
+    "test": "jest",
+    "test:verbose": "jest --verbose"
   },
   "keywords": [],
   "author": "solidados",
