@@ -29,8 +29,7 @@ export const requestHandler = async (
       notFoundHandler(res);
       return;
     }
-  } catch (error) {
-    console.error(error);
+  } catch {
     serverErrorHandler(res);
   }
 };
