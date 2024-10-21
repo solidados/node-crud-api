@@ -1,3 +1,5 @@
+import cluster from 'node:cluster';
+
 interface Database {
   [key: string]: unknown;
 }
@@ -13,3 +15,21 @@ export const sharedMemory = {
     delete database[key];
   },
 };
+
+if (cluster.isPrimary) {
+  cluster.on('message', (worker, message) => {
+    const { action, key, value } = message;
+
+    switch (action) {
+      case 'get':
+        worker.send({ key, value: sharedMemory.get(key) });
+        break;
+      case 'set':
+        sharedMemory.set(key, value);
+        break;
+      case 'delete':
+        sharedMemory.delete(key);
+        break;
+    }
+  });
+}

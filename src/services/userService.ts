@@ -1,27 +1,57 @@
-import { IUser } from '../models/userModel';
+import cluster from 'node:cluster';
 import { v4 } from 'uuid';
-import { sharedMemory } from '../sharedMemory';
+import { IUser } from '../models/userModel';
+import { Message } from '../types';
 
 const USERS_KEY: string = 'users';
 
-const getUsers = (): IUser[] => {
-  const data = sharedMemory.get(USERS_KEY);
+const sendMessageToPrimary = <T>(
+  action: string,
+  key: string,
+  value?: T,
+): Promise<T | undefined> => {
+  return new Promise((resolve) => {
+    if (cluster.isWorker && process.send) {
+      const message: Message<T> = { action, key, value };
+      process.send(message);
+
+      process.once('message', (response: Message<T> | unknown) => {
+        if (
+          typeof response === 'object' &&
+          response !== null &&
+          'value' in response
+        ) {
+          resolve((response as Message<T>).value);
+        } else {
+          resolve(undefined);
+        }
+      });
+    } else {
+      resolve(undefined);
+    }
+  });
+};
+
+const getUsers = async (): Promise<IUser[]> => {
+  const data = await sendMessageToPrimary('get', USERS_KEY);
   return Array.isArray(data) ? (data as IUser[]) : [];
 };
 
-const setUsers = (users: IUser[]) => sharedMemory.set(USERS_KEY, users);
+const setUsers = (users: IUser[]) =>
+  sendMessageToPrimary('set', USERS_KEY, users);
 
 export const getAllUsers = async (): Promise<IUser[]> => getUsers();
 
 export const getUserById = async (id: string): Promise<IUser | undefined> => {
-  return getUsers().find((user: IUser): boolean => user.id === id);
+  const users = await getUsers();
+  return users.find((user: IUser): boolean => user.id === id);
 };
 
 export const createUser = async (data: Omit<IUser, 'id'>): Promise<IUser> => {
   const newUser: IUser = { id: v4(), ...data };
-  const users = getUsers();
+  const users = await getUsers();
   users.push(newUser);
-  setUsers(users);
+  await setUsers(users);
   return newUser;
 };
 
@@ -29,7 +59,7 @@ export const updateUser = async (
   id: string,
   data: Partial<Omit<IUser, 'id'>>,
 ): Promise<IUser | null> => {
-  const users = getUsers();
+  const users = await getUsers();
   const userIndex: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
@@ -38,13 +68,13 @@ export const updateUser = async (
   }
 
   users[userIndex] = { ...users[userIndex], ...data };
-  setUsers(users);
+  await setUsers(users);
 
   return users[userIndex];
 };
 
 export const deleteUser = async (id: string): Promise<boolean> => {
-  const users = getUsers();
+  const users = await getUsers();
   const index: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
@@ -53,7 +83,8 @@ export const deleteUser = async (id: string): Promise<boolean> => {
   }
 
   users.splice(index, 1);
-  setUsers(users);
+  await setUsers(users);
+  await sendMessageToPrimary('delete', USERS_KEY);
 
   return true;
 };
