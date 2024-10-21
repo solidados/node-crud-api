@@ -1,11 +1,13 @@
-import cluster from 'node:cluster';
+// import cluster from 'node:cluster';
 import { v4 } from 'uuid';
 import { IUser } from '../models/userModel';
-import { Message } from '../types';
+import { sharedMemory } from '../sharedMemory';
+// import { Message } from '../types';
+// import { sharedMemory } from '../sharedMemory';
 
 const USERS_KEY: string = 'users';
 
-const sendMessageToPrimary = <T>(
+/*const sendMessageToPrimary = <T>(
   action: string,
   key: string,
   value?: T,
@@ -30,15 +32,16 @@ const sendMessageToPrimary = <T>(
       resolve(undefined);
     }
   });
-};
+};*/
 
 const getUsers = async (): Promise<IUser[]> => {
-  const data = await sendMessageToPrimary('get', USERS_KEY);
+  const data = (await sharedMemory.get(USERS_KEY)) as IUser[] | undefined;
   return Array.isArray(data) ? (data as IUser[]) : [];
 };
 
-const setUsers = (users: IUser[]) =>
-  sendMessageToPrimary('set', USERS_KEY, users);
+const setUsers = async (users: IUser[]): Promise<void> => {
+  sharedMemory.set(USERS_KEY, users);
+};
 
 export const getAllUsers = async (): Promise<IUser[]> => getUsers();
 
@@ -63,9 +66,8 @@ export const updateUser = async (
   const userIndex: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
-  if (userIndex === -1) {
-    return null;
-  }
+
+  if (userIndex === -1) return null;
 
   users[userIndex] = { ...users[userIndex], ...data };
   await setUsers(users);
@@ -78,13 +80,12 @@ export const deleteUser = async (id: string): Promise<boolean> => {
   const index: number = users.findIndex(
     (user: IUser): boolean => user.id === id,
   );
-  if (index === -1) {
-    return false;
-  }
+
+  if (index === -1) return false;
 
   users.splice(index, 1);
   await setUsers(users);
-  await sendMessageToPrimary('delete', USERS_KEY);
+  sharedMemory.delete('delete');
 
   return true;
 };

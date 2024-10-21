@@ -6,7 +6,6 @@ import {
   notFoundHandler,
   serverErrorHandler,
 } from './middleware/routeHandlers';
-import cluster from 'node:cluster';
 
 config();
 
@@ -28,7 +27,7 @@ export const requestHandler = async (
       return;
     }
 
-    // This is to allow `/api/users` either with our without ending `/`
+    // This is to allow to work on different protocols and access `/api/users` either with our without ending `/`
     const protocol: string | string[] =
       req.headers['x-forwarded-proto'] || 'http';
     const url = new URL(req.url || '', `${protocol}://${req.headers.host}`);
@@ -39,13 +38,12 @@ export const requestHandler = async (
       notFoundHandler(res);
       return;
     }
-  } catch {
+  } catch (error) {
+    console.error(error);
     serverErrorHandler(res);
   }
 };
 
 export const server = createServer(requestHandler);
 
-if (!cluster.isPrimary) {
-  server.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
-}
+server.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
