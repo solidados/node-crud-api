@@ -1,0 +1,37 @@
+### Get ALL Users
+GET http://localhost:4000/api/users HTTP/1.1
+
+### Create User
+POST http://localhost:4000/api/users HTTP/1.1
+Accept: application/json
+
+{
+  "username": "John Smith",
+  "age": 39,
+  "hobbies": [ "coding",  "mountain climbing", "yachting"]
+}
+
+### Get User
+GET http://localhost:4000/api/users/{:id} HTTP/1.1
+
+### Update User
+PUT http://localhost:4000/api/users/{:id} HTTP/1.1
+Accept: application/json
+
+{
+  "username": "John Smith Jr",
+  "age": 20,
+  "hobbies": ["gaming", "yachting"]
+}
+
+### Delete User
+DELETE http://localhost:4000/api/users/{:id} HTTP/1.1
+
+---
+### Get 500 "Internal Server Error" for non-existant URL
+GET http://localhost:4000/api/users/error HTTP/1.1
+Accept: application/json
+
+### Get 404 "User not found" for non-existant User
+GET http://localhost:4000/api/users/02ad95aa-1b49-4d37-859b-761b78f0ec99 HTTP/1.1
+Accept: application/json
